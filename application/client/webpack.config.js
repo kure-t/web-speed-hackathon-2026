@@ -28,7 +28,7 @@ const config = {
   // devtool: "inline-source-map",
   entry: {
     main: [
-      "regenerator-runtime/runtime",
+      // "regenerator-runtime/runtime",
       "jquery-binarytransport",
       path.resolve(SRC_PATH, "./index.css"),
       path.resolve(SRC_PATH, "./buildinfo.ts"),
@@ -146,9 +146,9 @@ const config = {
   },
 },
     concatenateModules: false,
-    usedExports: false,
-    providedExports: false,
-    sideEffects: false,
+    usedExports: true,
+    providedExports: true,
+    // sideEffects: false,
   },
   cache: false,
   ignoreWarnings: [
