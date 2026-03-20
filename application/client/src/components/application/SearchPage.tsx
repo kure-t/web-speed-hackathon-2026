@@ -9,13 +9,15 @@ import {
 } from "@web-speed-hackathon-2026/client/src/search/services";
 import { SearchFormData } from "@web-speed-hackathon-2026/client/src/search/types";
 import { validate } from "@web-speed-hackathon-2026/client/src/search/validation";
-import { analyzeSentiment } from "@web-speed-hackathon-2026/client/src/utils/negaposi_analyzer";
+// import { analyzeSentiment } from "@web-speed-hackathon-2026/client/src/utils/negaposi_analyzer";
 
 import { Button } from "../foundation/Button";
 
 interface Props {
   query: string;
   results: Models.Post[];
+  sentiment?: { score: number; label: "positive" | "negative" | "neutral" };
+  isLoadingSentiment?: boolean;
 }
 
 const SearchInput = ({ input, meta }: WrappedFieldProps) => (
@@ -40,6 +42,8 @@ const SearchPageComponent = ({
   query,
   results,
   handleSubmit,
+  sentiment,
+  isLoadingSentiment,
 }: Props & InjectedFormProps<SearchFormData, Props>) => {
   const navigate = useNavigate();
   const [isNegative, setIsNegative] = useState(false);
@@ -47,28 +51,31 @@ const SearchPageComponent = ({
   const parsed = parseSearchQuery(query);
 
   useEffect(() => {
-    if (!parsed.keywords) {
+    if (!query) {
       setIsNegative(false);
       return;
     }
 
     let isMounted = true;
-    analyzeSentiment(parsed.keywords)
-      .then((result) => {
-        if (isMounted) {
-          setIsNegative(result.label === "negative");
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setIsNegative(false);
-        }
-      });
+    if (isMounted && !isLoadingSentiment && sentiment && sentiment.label === "negative") {
+      setIsNegative(sentiment.label === "negative");
+    }
+    // analyzeSentiment(parsed.keywords)
+    //   .then((result) => {
+    //     if (isMounted) {
+    //       setIsNegative(result.label === "negative");
+    //     }
+    //   })
+    //   .catch(() => {
+    //     if (isMounted) {
+    //       setIsNegative(false);
+    //     }
+    //   });
 
     return () => {
       isMounted = false;
     };
-  }, [parsed.keywords]);
+  }, [query, isLoadingSentiment, sentiment]);
 
   const searchConditionText = useMemo(() => {
     const parts: string[] = [];

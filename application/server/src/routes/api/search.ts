@@ -2,40 +2,47 @@ import { Router } from "express";
 import { Op } from "sequelize";
 
 import { Post } from "@web-speed-hackathon-2026/server/src/models";
+import { DICTS_PATH } from "@web-speed-hackathon-2026/server/src/paths";
 import { parseSearchQuery } from "@web-speed-hackathon-2026/server/src/utils/parse_search_query.js";
-// import Bluebird from "bluebird";
-// import kuromoji, { type Tokenizer, type IpadicFeatures } from "kuromoji";
-// import analyze from "negaposi-analyzer-ja";
+import Bluebird from "bluebird";
+import kuromoji, { type Tokenizer, type IpadicFeatures } from "kuromoji";
+import analyze  from "negaposi-analyzer-ja";
 
 export const searchRouter = Router();
 
-// async function getTokenizer(): Promise<Tokenizer<IpadicFeatures>> {
-//   const builder = Bluebird.promisifyAll(kuromoji.builder({ dicPath: "/dicts" }));
-//   return await builder.buildAsync();
-// }
+let tokenizerPromise: Promise<Tokenizer<IpadicFeatures>> | null = null;
 
-// type SentimentResult = {
-//   score: number;
-//   label: "positive" | "negative" | "neutral";
-// };
+async function getTokenizer(): Promise<Tokenizer<IpadicFeatures>> {
+  if (tokenizerPromise === null) {
+    const builder = Bluebird.promisifyAll(kuromoji.builder({ dicPath: DICTS_PATH }));
+    tokenizerPromise = builder.buildAsync();
+  }
 
-// export async function analyzeSentiment(text: string): Promise<SentimentResult> {
-//   const tokenizer = await getTokenizer();
-//   const tokens = tokenizer.tokenize(text);
+  return await tokenizerPromise;
+}
 
-//   const score = analyze(tokens);
+type SentimentResult = {
+  score: number;
+  label: "positive" | "negative" | "neutral";
+};
 
-//   let label: SentimentResult["label"];
-//   if (score > 0.1) {
-//     label = "positive";
-//   } else if (score < -0.1) {
-//     label = "negative";
-//   } else {
-//     label = "neutral";
-//   }
+export async function analyzeSentiment(text: string): Promise<SentimentResult> {
+  const tokenizer = await getTokenizer();
+  const tokens = tokenizer.tokenize(text);
 
-//   return { score, label };
-// }
+  const score = analyze(tokens);
+
+  let label: SentimentResult["label"];
+  if (score > 0.1) {
+    label = "positive";
+  } else if (score < -0.1) {
+    label = "negative";
+  } else {
+    label = "neutral";
+  }
+
+  return { score, label };
+}
 
 searchRouter.get("/search", async (req, res) => {
   const query = req.query["q"];
@@ -119,5 +126,12 @@ searchRouter.get("/search", async (req, res) => {
 
   const result = mergedPosts.slice(offset || 0, (offset || 0) + (limit || mergedPosts.length));
 
-  return res.status(200).type("application/json").send(result);
+  return res.status(200).type("application/json").send( result );
 });
+
+
+searchRouter.get("/analyze", async (req, res) => {
+  const query = req.query["q"];
+  const {score , label} = await analyzeSentiment(typeof query === "string" ? query : "");
+  return res.status(200).type("application/json").send({ score, label });
+})
