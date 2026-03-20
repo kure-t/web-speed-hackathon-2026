@@ -1,6 +1,6 @@
 /// <reference types="webpack-dev-server" />
 const path = require("path");
-
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
@@ -28,7 +28,6 @@ const config = {
   // devtool: "inline-source-map",
   entry: {
     main: [
-      "core-js",
       "regenerator-runtime/runtime",
       "jquery-binarytransport",
       path.resolve(SRC_PATH, "./index.css"),
@@ -94,6 +93,7 @@ const config = {
       inject: false,
       template: path.resolve(SRC_PATH, "./index.html"),
     }),
+     new BundleAnalyzerPlugin(),
   ],
   resolve: {
     extensions: [".tsx", ".ts", ".mjs", ".cjs", ".jsx", ".js"],
@@ -137,6 +137,12 @@ const config = {
       chunks: "async",
       priority: 50,
     },
+    ffmpeg: {
+  test: /[\\/]node_modules[\\/]@ffmpeg[\\/]/,
+  name: "ffmpeg",
+  chunks: "async",
+  priority: 60,
+}
   },
 },
     concatenateModules: false,
