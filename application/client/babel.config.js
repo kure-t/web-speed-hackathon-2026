@@ -4,9 +4,10 @@ module.exports = {
     [
       "@babel/preset-env",
       {
-       targets: "defaults",
+        targets: "defaults",
         modules: false,
         useBuiltIns: false,
+        exclude: ["proposal-dynamic-import"],
       },
     ],
     [
