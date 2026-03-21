@@ -8,6 +8,7 @@ import { sessionMiddleware } from "@web-speed-hackathon-2026/server/src/session"
 export const app = Express();
 
 app.set("trust proxy", true);
+app.use(staticRouter);
 
 app.use("/api/v1", sessionMiddleware);
 app.use("/api/v1", bodyParser.json());
@@ -21,4 +22,3 @@ app.use((_req, res, next) => {
 });
 
 app.use("/api/v1", apiRouter);
-app.use(staticRouter);
