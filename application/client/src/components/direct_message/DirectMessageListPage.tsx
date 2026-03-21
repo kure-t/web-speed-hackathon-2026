@@ -62,9 +62,9 @@ export const DirectMessageListPage = ({ activeUser, newDmModalId }: Props) => {
     void loadConversations();
   });
 
-  if (conversations == null) {
-    return null;
-  }
+  // if (conversations == null) {
+  //   return null;
+  // }
 
   return (
     <section>
@@ -83,7 +83,11 @@ export const DirectMessageListPage = ({ activeUser, newDmModalId }: Props) => {
 
       {error != null ? (
         <p className="text-cax-danger px-4 py-6 text-center text-sm">DMの取得に失敗しました</p>
-      ) : conversations.length === 0 ? (
+      ) : 
+      conversations == null ? (
+        <p className="text-cax-text-muted px-4 py-6 text-center">DMを読み込んでいます...</p>
+      ):
+      conversations.length === 0 ? (
         <p className="text-cax-text-muted px-4 py-6 text-center">
           まだDMで会話した相手がいません。
         </p>
