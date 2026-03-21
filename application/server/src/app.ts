@@ -9,9 +9,9 @@ export const app = Express();
 
 app.set("trust proxy", true);
 
-app.use(sessionMiddleware);
-app.use(bodyParser.json());
-app.use(bodyParser.raw({ limit: "10mb" }));
+app.use("/api/v1", sessionMiddleware);
+app.use("/api/v1", bodyParser.json());
+app.use("/api/v1", bodyParser.raw({ limit: "10mb" }));
 
 app.use((_req, res, next) => {
   res.header({

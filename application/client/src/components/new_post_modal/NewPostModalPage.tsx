@@ -56,12 +56,13 @@ export const NewPostModalPage = ({ id, hasError, isLoading, onResetError, onSubm
       Promise.all(
         files.map((file) =>
           // convertImage(file, { extension: MagickFormat.Jpg }).then(
-         convertImage(file, { extension: "image/jpeg" }).then(
-            (blob) => new File([blob], "converted.jpg", { type: "image/jpeg" }),
+         convertImage(file, { extension: "image/webp" }).then(
+            (blob) => new File([blob], "converted.webp  ", { type: "image/webp" }),
           ),
         ),
       )
         .then((convertedFiles) => {
+          console.log("convertedFiles:", convertedFiles.map((file) => ({ name: file.name, size: file.size, type: file.type })));
           setParams((params) => ({
             ...params,
             images: convertedFiles,

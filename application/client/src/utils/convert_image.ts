@@ -1,7 +1,8 @@
 import { dump, insert, load, ImageIFD } from "piexifjs";
 
 interface Options {
-  extension: "image/jpeg";
+  extension: "image/webp";
+  // extension: "image/jpeg";
 }
 
 function blobToDataUrl(blob: Blob): Promise<string> {
